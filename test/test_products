@@ -1,0 +1,30 @@
+<?php
+require 'includes/config.php';
+require 'includes/db_connect.php';
+require 'includes/functions.php';
+
+$db = new Database();
+$conn = $db->getConnection();
+
+// Test the exact query being used
+$stmt = $conn->query("
+    SELECT p.*, u.username as seller_name 
+    FROM products p
+    JOIN users u ON p.seller_id = u.id
+    WHERE p.featured = 1
+    LIMIT 6
+");
+
+echo "<h2>Database Test Results</h2>";
+echo "<p>Found ".$stmt->rowCount()." products</p>";
+
+if ($stmt->rowCount() > 0) {
+    echo "<pre>".print_r($stmt->fetchAll(PDO::FETCH_ASSOC), true)."</pre>";
+} else {
+    echo "<p>No products found. Check:</p>";
+    echo "<ul>
+        <li>Products table exists</li>
+        <li>There are products with featured=1</li>
+        <li>Users table has matching seller_ids</li>
+    </ul>";
+}
